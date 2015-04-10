@@ -29,7 +29,7 @@ def store_search(keywords):
     """
     Store results of search to .
     """
-    base_url = "http://localhost:59742/blog/post/_search"
+    base_url = "http://localhost:59742/documents/document/_search"
     params = {'q': 'body:' + keywords, 'pretty': 'true'}
     response = requests.get(base_url, params=params)
     j = response.json()
@@ -38,12 +38,15 @@ def store_search(keywords):
     hits = j['hits']['hits']
     
     results = []
+
     for hit in hits:	        
         doc = hit['_source']['body'] 
-   	score = hit['_score']
- 	doc_id = hit['_id']
-	results.append(dict(doc=doc, score=score, doc_id=doc_id))
-    
+        title = hit['_source']['title']
+        url = hit['_source']['url']
+        score = hit['_score']
+        doc_id = hit['_id']
+        results.append(dict(doc=doc, title=title, url=url, score=score, doc_id=doc_id))
+
     scraperwiki.sql.save(unique_keys=['doc_id'], data=results, table_name='results')
     
 if __name__ == '__main__':
