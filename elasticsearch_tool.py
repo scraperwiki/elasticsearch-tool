@@ -32,10 +32,22 @@ def create_search_body(keywords, number_of_results=50):
 
     Don't set number_of_results too high, as this is a single page
     of results. TODO: implement proper pagination. """
+    # Assume search phrases are all in quotes.
+    terms = [term.strip() for term in keywords.split('"')
+             if term and not term.isspace()]
+    # Build up a search for each term.
+    term_queries = []
+    for term in terms:
+        term_query = addict.Dict()
+        term_query.match_phrase.body = term
+        term_queries.append(term_query)
+
     body = addict.Dict()
+    body.query.bool.should = term_queries
+
     # match_phrase matches phrase exactly
-    body.query.match_phrase.body = keywords
-    # match just matches keywords
+    #body.query.match_phrase.body = keywords
+    # match just matches any word
     #body.query.match.body = keywords
     body.highlight.fields.body = {}
     body.size = number_of_results
