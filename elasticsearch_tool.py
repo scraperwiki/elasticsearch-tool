@@ -27,11 +27,15 @@ def main(argv=None):
     return run_search(keywords)
 
 
-def create_search_body(keywords):
-    """ Take keywords; return addict containing ElasticSearch body. """
+def create_search_body(keywords, number_of_results=50):
+    """ Take keywords; return addict containing ElasticSearch body.
+
+    Don't set number_of_results too high, as this is a single page
+    of results. TODO: implement proper pagination. """
     body = addict.Dict()
     body.query.match.body = keywords
     body.highlight.fields.body = {}
+    body.size = number_of_results
     return body
 
 
@@ -46,7 +50,10 @@ def save_results_to_sqlite(result):
         result['title'] = hit['_source']['title']
         result['url'] = hit['_source']['url']
         result['score'] = hit['_score']
-        result['doc_full_text'] = hit['_source']['body']
+        # Commented out as slows down table view tool and
+        # there's a link to the source displayed which is
+        # perhaps as useful for demo purposes.
+        #result['doc_full_text'] = hit['_source']['body']
         result['highlight'] = '...'.join(hit['highlight']['body'])
         results.append(result)
     scraperwiki.sql.save(unique_keys=['doc_id'],
