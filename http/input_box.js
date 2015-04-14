@@ -73,7 +73,7 @@ $(function() {
     $('#source-go').on('click', function() {
       $(this).addClass('loading').html('Fetching…')
       saveSettings(function() {
-        scraperwiki.exec("tool/elasticsearch.py", execSuccess)
+        scraperwiki.exec("tool/elasticsearch_tool.py", execSuccess)
         var q = $('#input').val()
         scraperwiki.dataset.name("Elasticsearch results for " + name_from_url(q))
       })
