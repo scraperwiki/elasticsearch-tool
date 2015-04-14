@@ -33,7 +33,10 @@ def create_search_body(keywords, number_of_results=50):
     Don't set number_of_results too high, as this is a single page
     of results. TODO: implement proper pagination. """
     body = addict.Dict()
-    body.query.match.body = keywords
+    # match_phrase matches phrase exactly
+    body.query.match_phrase.body = keywords
+    # match just matches keywords
+    #body.query.match.body = keywords
     body.highlight.fields.body = {}
     body.size = number_of_results
     return body
